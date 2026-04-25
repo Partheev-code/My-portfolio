@@ -1,0 +1,20 @@
+{
+  "name": "3d-portfolio",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "gsap": "^3.12.7",
+    "postprocessing": "^6.37.4",
+    "puppeteer": "^24.42.0",
+    "three": "^0.172.0"
+  },
+  "devDependencies": {
+    "vite": "^6.4.1"
+  }
+}

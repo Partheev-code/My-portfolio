@@ -1,0 +1,1227 @@
+/* ============================================================
+   CSS Reset & Base
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --font-main: 'Inter', sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+  --white: #ffffff;
+  --off-white: #e8e8e8;
+  --gray: #888888;
+  --accent: #c8ff00;  /* neon-chartreuse — punchy on dark */
+}
+
+html {
+  /* Allow normal scrolling — canvas is fixed so it stays put */
+  overflow-y: scroll;
+  scroll-behavior: smooth;
+}
+
+body {
+  width: 100%;
+  background: #000;
+  color: var(--white);
+  font-family: var(--font-main);
+}
+
+/* ============================================================
+   Scroll Spacer  (gives the camera path its travel distance)
+   ============================================================ */
+#scroll-spacer {
+  position: relative;          /* participates in doc flow  */
+  width: 100%;
+  height: 8000px;
+  pointer-events: none;        /* never intercepts clicks   */
+  z-index: -1;
+}
+
+/* ============================================================
+   Scroll Progress Bar  (thin neon strip at top of viewport)
+   ============================================================ */
+#scroll-progress-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 3px;
+  width: 0%;                   /* driven by JS               */
+  background: linear-gradient(90deg, #c8ff00, #00ffc8);
+  z-index: 9998;
+  transition: width 0.1s linear;
+  box-shadow: 0 0 8px #c8ff00aa;
+}
+
+/* ============================================================
+   Canvas
+   ============================================================ */
+#webgl-canvas {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  display: block;
+}
+
+/* ============================================================
+   Hero Overlay
+   ============================================================ */
+#hero-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 8vw;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+
+#hero-overlay.visible { opacity: 1; }
+
+.hero-content {
+  max-width: 560px;
+}
+
+.hero-eyebrow {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 1rem;
+  font-weight: 400;
+}
+
+.hero-name {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 7vw, 5.5rem);
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--white);
+  margin-bottom: 1.25rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-tagline {
+  font-size: clamp(1rem, 1.8vw, 1.2rem);
+  color: var(--off-white);
+  line-height: 1.65;
+  opacity: 0.85;
+  margin-bottom: 2.5rem;
+  font-weight: 300;
+}
+
+.hero-cta { display: flex; align-items: center; gap: 1rem; }
+
+.scroll-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gray);
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50%       { transform: translateY(6px); }
+}
+
+/* ============================================================
+   Transition Overlay
+   ============================================================ */
+#transition-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--white);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+#transition-overlay.flash {
+  opacity: 1;
+}
+
+/* ============================================================
+   Scroll Sections (About & Skills)
+   ============================================================ */
+.scroll-section {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end; /* right aligned so the stairs remain visible */
+  padding: 0 10vw;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(40px);
+}
+
+.scroll-section.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* If you want the 'hero-overlay' to also animate out cleanly when scrolled past */
+#hero-overlay {
+  transition: opacity 0.8s ease, transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+  transform: translateY(0);
+}
+#hero-overlay:not(.visible) {
+  transform: translateY(-40px);
+}
+
+.glass-card {
+  padding: 3rem;
+  max-width: 540px;
+  color: var(--white);
+}
+
+.scroll-section.visible .glass-card {
+  pointer-events: auto; /* allow text selection / clicking ONLY when visible */
+}
+
+/* Ensure the card goes behind transition overlay but above canvas */
+.scroll-section {
+  z-index: 50;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: 2.2rem;
+  color: var(--accent);
+  margin-bottom: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.glass-card p {
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--off-white);
+  margin-bottom: 1.25rem;
+  font-weight: 300;
+}
+
+.glass-card p:last-of-type {
+  margin-bottom: 0;
+}
+
+.skills-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem;
+  margin-top: 2rem;
+}
+
+.skill-tag {
+  background: rgba(200, 255, 0, 0.08);
+  border: 1px solid rgba(200, 255, 0, 0.4);
+  color: var(--accent);
+  padding: 0.5rem 1.25rem;
+  border-radius: 50px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  transition: all 0.3s ease;
+}
+
+.skill-tag:hover {
+  background: rgba(200, 255, 0, 0.2);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(200, 255, 0, 0.15);
+}
+
+.highlight {
+  color: var(--accent);
+}
+
+/* ============================================================
+   Skills Category Labels
+   ============================================================ */
+.skills-category-label {
+  font-size: 0.7rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.6;
+  margin-top: 1.4rem;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+}
+
+/* ============================================================
+   About Card — photo + text layout
+   ============================================================ */
+.about-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 2.2rem;
+  max-width: 660px !important;
+  padding: 2.5rem !important;
+}
+
+/* Photo wrapper holds the image + animated glow ring */
+.about-photo-wrap {
+  position: relative;
+  flex-shrink: 0;
+  width: 130px;
+  height: 130px;
+}
+
+.about-photo {
+  width: 130px;
+  height: 130px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: center top;
+  position: relative;
+  z-index: 2;
+  border: 3px solid rgba(200, 255, 0, 0.55);
+  display: block;
+}
+
+/* Animated neon glow ring behind the photo */
+.about-photo-glow {
+  position: absolute;
+  inset: -6px;
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    #c8ff00 0%,
+    #00ffc8 30%,
+    transparent 60%,
+    #c8ff00 100%
+  );
+  z-index: 1;
+  animation: spin-glow 4s linear infinite;
+  opacity: 0.75;
+  filter: blur(4px);
+}
+
+@keyframes spin-glow {
+  to { transform: rotate(360deg); }
+}
+
+.about-text {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ============================================================
+   Social Links
+   ============================================================ */
+.social-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+  pointer-events: auto;
+}
+
+.social-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1.1rem;
+  border-radius: 50px;
+  border: 1px solid rgba(200, 255, 0, 0.35);
+  background: rgba(200, 255, 0, 0.06);
+  color: var(--accent);
+  font-size: 0.8rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  pointer-events: auto;
+  transition: background 0.25s ease, transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+}
+
+.social-btn:hover {
+  background: rgba(200, 255, 0, 0.18);
+  border-color: rgba(200, 255, 0, 0.7);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(200, 255, 0, 0.15);
+}
+
+.social-btn svg {
+  flex-shrink: 0;
+}
+
+/* ============================================================
+   Gallery Overlay — 3D Rotational Carousel
+   ============================================================ */
+#gallery-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: 2.4rem;
+  gap: 1rem;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.6s ease 0.2s;
+}
+
+#gallery-overlay.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ── Heading ─────────────────────────────────────────────── */
+.gallery-heading {
+  position: absolute;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.gallery-label {
+  display: block;
+  font-size: 0.62rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.8;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.gallery-title {
+  font-family: var(--font-display);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--white);
+  letter-spacing: -0.03em;
+  text-shadow: 0 2px 24px rgba(0,0,0,0.5);
+}
+
+/* ── Carousel Scene wrapper ──────────────────────────────── */
+.carousel-scene {
+  position: relative;          /* buttons are absolute children of this */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 420px;               /* fixed height = track height + breathing room */
+}
+
+/* ── Arrow buttons — absolutely positioned, completely independent of track ── */
+.carousel-btn {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 20;             /* far above everything in the carousel */
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(10, 10, 20, 0.65);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  color: rgba(255, 255, 255, 0.75);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.25s, border-color 0.25s, color 0.25s,
+              box-shadow 0.25s;
+}
+
+#carousel-prev { left:  clamp(1rem, 5vw, 5rem); }
+#carousel-next { right: clamp(1rem, 5vw, 5rem); }
+
+.carousel-btn:hover {
+  background: rgba(var(--accent-rgb, 200,255,0), 0.15);
+  border-color: rgba(var(--accent-rgb, 200,255,0), 0.5);
+  color: #ffffff;
+  box-shadow: 0 0 22px rgba(200, 255, 0, 0.25);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.carousel-btn:active {
+  transform: translateY(-50%) scale(0.93);
+}
+
+/* ── 3D Track ─────────────────────────────────────────────── */
+.carousel-track {
+  position: relative;
+  width: 340px;
+  height: 390px;
+  perspective: 1100px;
+  pointer-events: none;   /* track never steals clicks — active card overrides below */
+}
+
+/* ── Individual cards (positioned in 3D space) ──────────── */
+.glass-project-card {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  overflow: hidden;
+
+  /* Glassmorphism */
+  background: rgba(10, 10, 20, 0.48);
+  backdrop-filter: blur(20px) saturate(1.5);
+  -webkit-backdrop-filter: blur(20px) saturate(1.5);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow:
+    0 8px 32px rgba(0,0,0,0.4),
+    inset 0 1px 0 rgba(255,255,255,0.07);
+
+  display: flex;
+  flex-direction: column;
+
+  /* 3D transform — driven entirely by JS-set CSS vars */
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  transition:
+    transform 0.6s cubic-bezier(0.25, 0.8, 0.25, 1),
+    opacity   0.6s cubic-bezier(0.25, 0.8, 0.25, 1),
+    box-shadow 0.6s ease;
+
+  /* Default hidden state (JS overrides per-card) */
+  opacity: 0;
+  transform: rotateY(0deg) translateZ(-200px) scale(0.75);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Active card — front and centre */
+.glass-project-card.is-active {
+  opacity: 1;
+  transform: rotateY(0deg) translateZ(0px) scale(1);
+  pointer-events: auto;
+  box-shadow:
+    0 20px 60px rgba(0,0,0,0.5),
+    0 0 0 1px rgba(var(--accent-rgb), 0.3),
+    inset 0 1px 0 rgba(255,255,255,0.1);
+  z-index: 3;
+}
+
+/* Previous card — left, rotated away */
+.glass-project-card.is-prev {
+  opacity: 0.42;
+  transform: rotateY(48deg) translateX(-42%) translateZ(-130px) scale(0.76);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Next card — right, rotated away */
+.glass-project-card.is-next {
+  opacity: 0.42;
+  transform: rotateY(-48deg) translateX(42%) translateZ(-130px) scale(0.76);
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Accent bar */
+.gpc-accent-bar {
+  height: 3px;
+  background: var(--accent, #c8ff00);
+  box-shadow: 0 0 14px var(--accent, #c8ff00);
+  flex-shrink: 0;
+}
+
+/* Icon */
+.gpc-icon {
+  font-size: 2.2rem;
+  padding: 1.1rem 1.4rem 0.2rem;
+  filter: drop-shadow(0 0 12px rgba(var(--accent-rgb), 0.65));
+  line-height: 1;
+}
+
+/* Body */
+.gpc-body {
+  padding: 0.4rem 1.4rem 0.8rem;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.gpc-name {
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0 0 0.2rem;
+  letter-spacing: -0.01em;
+}
+
+.gpc-type {
+  display: block;
+  font-size: 0.6rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent, #c8ff00);
+  opacity: 0.8;
+  margin-bottom: 0.65rem;
+  font-weight: 600;
+}
+
+.gpc-desc {
+  font-size: 0.78rem;
+  line-height: 1.65;
+  color: rgba(255,255,255,0.6);
+  margin-bottom: 0.8rem;
+}
+
+/* Scrollable container for long project details */
+.scrollable-desc {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 0.5rem;
+  margin-bottom: 0.8rem;
+  
+  /* Modern scrollbar for Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255,255,255,0.2) transparent;
+}
+
+/* Modern scrollbar for WebKit */
+.scrollable-desc::-webkit-scrollbar {
+  width: 4px;
+}
+.scrollable-desc::-webkit-scrollbar-track {
+  background: transparent;
+}
+.scrollable-desc::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.2);
+  border-radius: 4px;
+}
+.scrollable-desc::-webkit-scrollbar-thumb:hover {
+  background: var(--accent);
+}
+
+/* Bullet list styles for project cards */
+.project-details-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.project-details-list li {
+  position: relative;
+  padding-left: 1rem;
+  font-size: 0.72rem;
+  line-height: 1.5;
+}
+
+.project-details-list li::before {
+  content: '▸';
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: var(--accent);
+  font-size: 0.8rem;
+}
+
+.gpc-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.38rem;
+}
+
+.gpc-tag {
+  font-size: 0.6rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 0.18rem 0.55rem;
+  border-radius: 50px;
+  color: var(--accent, #c8ff00);
+  background: rgba(var(--accent-rgb), 0.1);
+  border: 1px solid rgba(var(--accent-rgb), 0.28);
+}
+
+/* Footer */
+.gpc-footer {
+  padding: 0.75rem 1.4rem 1rem;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  display: flex;
+  gap: 0.5rem;
+}
+
+.gpc-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.38rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: rgba(255,255,255,0.55);
+  text-decoration: none;
+  padding: 0.3rem 0.8rem;
+  border-radius: 50px;
+  border: 1px solid rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.04);
+  transition: all 0.22s ease;
+}
+
+.gpc-link:hover {
+  color: var(--accent, #c8ff00);
+  border-color: rgba(var(--accent-rgb), 0.4);
+  background: rgba(var(--accent-rgb), 0.08);
+}
+
+/* Radial glow blob */
+.gpc-glow {
+  position: absolute;
+  bottom: -24px; right: -16px;
+  width: 110px; height: 110px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(var(--accent-rgb),0.2) 0%, transparent 70%);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.glass-project-card.is-active .gpc-glow { opacity: 1; }
+
+/* ── Dot indicators ─────────────────────────────────────── */
+.carousel-dots {
+  display: flex;
+  gap: 0.55rem;
+  align-items: center;
+}
+
+.carousel-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: none;
+  background: rgba(255,255,255,0.25);
+  cursor: pointer;
+  padding: 0;
+  transition: background 0.3s, transform 0.3s, width 0.3s;
+}
+
+.carousel-dot.active {
+  background: var(--accent);
+  width: 22px;
+  border-radius: 4px;
+  box-shadow: 0 0 8px var(--accent);
+}
+
+/* ── Explore hint ────────────────────────────────────────── */
+.gallery-explore-hint {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  font-size: 0.68rem;
+  color: rgba(255,255,255,0.28);
+  letter-spacing: 0.06em;
+}
+
+.hint-dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+  animation: pulse-dot 2.2s ease-in-out infinite;
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity:1; transform:scale(1);   box-shadow: 0 0 0 0   rgba(200,255,0,0.5); }
+  50%       { opacity:.6; transform:scale(1.3); box-shadow: 0 0 0 6px rgba(200,255,0,0);   }
+}
+
+/* ============================================================
+   Contact Section — outer-space floating card
+   ============================================================ */
+
+/* Right-aligned, transparent — mirrors the skills/about layout */
+#contact-overlay {
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.contact-card {
+  max-width: 460px !important;
+  width: 42vw;
+  min-width: 320px;
+  padding: 2.2rem !important;
+  background: none;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  position: relative;
+}
+
+.contact-card > * { position: relative; z-index: 1; }
+
+.contact-lead {
+  font-size: 0.84rem;
+  color: rgba(255,255,255,0.42);
+  line-height: 1.65;
+  margin-bottom: 1.6rem;
+  font-weight: 300;
+}
+
+/* ── Form layout ─────────────────────────────────────────── */
+.contact-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.cf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+@media (max-width: 520px) {
+  .cf-row { grid-template-columns: 1fr; }
+}
+
+/* ── Field group ─────────────────────────────────────────── */
+.cf-group {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cf-label {
+  font-size: 0.65rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+  opacity: 0.7;
+  font-weight: 600;
+}
+
+.cf-input {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.07);
+  border-radius: 10px;
+  padding: 0.7rem 0.9rem;
+  color: var(--white);
+  font-family: var(--font-main);
+  font-size: 0.85rem;
+  outline: none;
+  transition: border-color 0.3s ease, background 0.3s ease, box-shadow 0.3s ease;
+  resize: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.cf-input::placeholder {
+  color: rgba(255,255,255,0.2);
+  font-weight: 300;
+}
+
+.cf-input:focus {
+  border-color: rgba(200,255,0,0.45);
+  background: rgba(200,255,0,0.04);
+  box-shadow: 0 0 0 3px rgba(200,255,0,0.08), 0 4px 20px rgba(0,0,0,0.3);
+}
+
+/* Animated underline accent on focus */
+.cf-focus-line {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 0%;
+  height: 2px;
+  background: linear-gradient(90deg, #c8ff00, #00ffc8);
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: width 0.35s cubic-bezier(0.25,0.8,0.25,1);
+  pointer-events: none;
+}
+
+.cf-group:focus-within .cf-focus-line {
+  width: calc(100% - 20px);
+}
+
+.cf-textarea {
+  min-height: 110px;
+  line-height: 1.6;
+}
+
+/* ── Submit button ───────────────────────────────────────── */
+.cf-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0.85rem 2rem;
+  border-radius: 50px;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-main);
+  font-size: 0.88rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #000;
+  background: linear-gradient(135deg, #c8ff00 0%, #00ffc8 100%);
+  box-shadow: 0 4px 20px rgba(200,255,0,0.3), 0 0 0 0 rgba(200,255,0,0);
+  transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+  align-self: flex-start;
+  overflow: hidden;
+}
+
+.cf-btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(255,255,255,0);
+  transition: background 0.25s ease;
+  border-radius: inherit;
+}
+
+.cf-btn:hover:not(:disabled) {
+  transform: translateY(-2px) scale(1.02);
+  box-shadow: 0 8px 32px rgba(200,255,0,0.45), 0 0 0 0 rgba(200,255,0,0);
+}
+
+.cf-btn:hover::before { background: rgba(255,255,255,0.12); }
+
+.cf-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.cf-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Spinner shown while submitting */
+.cf-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(0,0,0,0.3);
+  border-top-color: #000;
+  border-radius: 50%;
+  display: none;
+  animation: cf-spin 0.7s linear infinite;
+}
+
+@keyframes cf-spin {
+  to { transform: rotate(360deg); }
+}
+
+.cf-btn.loading .cf-btn-text { display: none; }
+.cf-btn.loading .cf-btn-icon { display: none; }
+.cf-btn.loading .cf-spinner   { display: block; }
+
+/* Success / Error messages */
+.cf-success,
+.cf-error {
+  font-size: 0.82rem;
+  font-weight: 500;
+  border-radius: 8px;
+  padding: 0.6rem 1rem;
+  display: none;
+  margin-top: 0.2rem;
+}
+
+.cf-success {
+  background: rgba(0, 255, 136, 0.1);
+  border: 1px solid rgba(0,255,136,0.25);
+  color: #00ff88;
+}
+
+.cf-error {
+  background: rgba(255, 80, 80, 0.1);
+  border: 1px solid rgba(255,80,80,0.25);
+  color: #ff7070;
+}
+
+.cf-success.show,
+.cf-error.show {
+  display: block;
+  animation: cf-msg-in 0.4s ease;
+}
+
+@keyframes cf-msg-in {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Contact chips (email / LinkedIn) ───────────────────── */
+.contact-info-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.5rem;
+  pointer-events: auto;
+}
+
+.contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.45rem 1rem;
+  border-radius: 50px;
+  border: 1px solid rgba(200,255,0,0.2);
+  background: rgba(200,255,0,0.05);
+  color: rgba(255,255,255,0.55);
+  font-size: 0.75rem;
+  font-weight: 500;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  transition: all 0.25s ease;
+  pointer-events: auto;
+}
+
+.contact-chip svg { flex-shrink: 0; opacity: 0.7; }
+
+.contact-chip:hover {
+  border-color: rgba(200,255,0,0.5);
+  background: rgba(200,255,0,0.1);
+  color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(200,255,0,0.12);
+}
+
+/* ============================================================
+   Audio Toggle Button
+   ============================================================ */
+.audio-toggle-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: rgba(10, 10, 20, 0.65);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.75);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  z-index: 1000;
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  transition: all 0.25s ease;
+  pointer-events: auto; /* ensure it's clickable */
+}
+
+.audio-toggle-btn:hover {
+  background: rgba(var(--accent-rgb, 200,255,0), 0.15);
+  border-color: rgba(var(--accent-rgb, 200,255,0), 0.5);
+  color: #ffffff;
+  box-shadow: 0 0 22px rgba(200, 255, 0, 0.25);
+  transform: scale(1.1);
+}
+
+.audio-toggle-btn.playing {
+  border-color: rgba(var(--accent-rgb, 200,255,0), 0.8);
+  color: var(--accent);
+}
+
+.audio-toggle-btn:active {
+  transform: scale(0.93);
+}
+
+/* ============================================================
+   Mobile Responsiveness (Media Queries)
+   ============================================================ */
+
+/* Tablet & Mobile Landscape (up to 992px) */
+@media (max-width: 992px) {
+  .hero-name {
+    font-size: clamp(2.5rem, 6vw, 4rem);
+  }
+  
+  .glass-card {
+    padding: 2rem !important;
+  }
+  
+  .about-card {
+    gap: 1.5rem;
+  }
+  
+  .carousel-track {
+    width: 280px;
+    height: 340px;
+  }
+  
+  .carousel-scene {
+    height: 380px;
+  }
+}
+
+/* Mobile Portrait (up to 768px) */
+@media (max-width: 768px) {
+  /* Hero Section */
+  #hero-overlay {
+    padding: 0 6vw;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .hero-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .hero-cta {
+    justify-content: center;
+  }
+  
+  /* Sections General */
+  .scroll-section {
+    padding: 0 5vw;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .glass-card {
+    padding: 1.8rem !important;
+    max-width: 100%;
+    margin-top: 10vh; /* Push slightly down so it doesn't cover top neon bar fully */
+  }
+  
+  .section-title {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+  
+  /* About Card */
+  .about-card {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  
+  .social-links {
+    justify-content: center;
+  }
+  
+  /* Skills */
+  .skills-grid {
+    justify-content: center;
+  }
+  
+  .skills-category-label {
+    text-align: center;
+  }
+  
+  /* Gallery */
+  #gallery-overlay {
+    padding-bottom: 5rem; /* Room for audio toggle */
+  }
+  
+  .gallery-heading {
+    top: 5vh;
+  }
+  
+  .gallery-title {
+    font-size: 1.6rem;
+  }
+  
+  .carousel-track {
+    width: 240px;
+    height: 320px;
+  }
+  
+  .glass-project-card.is-prev {
+    transform: rotateY(45deg) translateX(-35%) translateZ(-160px) scale(0.65);
+  }
+  
+  .glass-project-card.is-next {
+    transform: rotateY(-45deg) translateX(35%) translateZ(-160px) scale(0.65);
+  }
+  
+  .gpc-name {
+    font-size: 1.1rem;
+  }
+  
+  .gpc-desc {
+    font-size: 0.75rem;
+  }
+  
+  .carousel-btn {
+    width: 44px;
+    height: 44px;
+  }
+  
+  #carousel-prev { left: 2vw; }
+  #carousel-next { right: 2vw; }
+  
+  /* Contact Card */
+  .contact-card {
+    width: 90vw;
+    min-width: unset;
+    margin-top: 5vh;
+  }
+  
+  .contact-info-row {
+    justify-content: center;
+  }
+  
+  /* Audio Toggle */
+  .audio-toggle-btn {
+    bottom: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* Small Mobile (up to 480px) */
+@media (max-width: 480px) {
+  .hero-name {
+    font-size: 2.2rem;
+  }
+  
+  .glass-card {
+    padding: 1.4rem !important;
+  }
+  
+  .carousel-track {
+    width: 210px;
+    height: 300px;
+  }
+  
+  .glass-project-card.is-prev {
+    transform: rotateY(40deg) translateX(-25%) translateZ(-180px) scale(0.55);
+  }
+  
+  .glass-project-card.is-next {
+    transform: rotateY(-40deg) translateX(25%) translateZ(-180px) scale(0.55);
+  }
+  
+  .gpc-tags {
+    justify-content: center;
+  }
+  
+  .gpc-footer {
+    justify-content: center;
+  }
+}
